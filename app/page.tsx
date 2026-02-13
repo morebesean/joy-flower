@@ -14,8 +14,11 @@ export default function Home() {
   const { items, addItem, getItemCount, getTotal } = useCart()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
+
     async function fetchProducts() {
       const supabase = createClient()
       const { data, error } = await supabase
@@ -59,12 +62,12 @@ export default function Home() {
               <Button variant="outline" className="relative">
                 <ShoppingCart className="h-4 w-4 mr-2" />
                 Cart
-                {getItemCount() > 0 && (
+                {mounted && getItemCount() > 0 && (
                   <Badge className="ml-2 bg-pink-600">{getItemCount()}</Badge>
                 )}
               </Button>
             </Link>
-            {getTotal() > 0 && (
+            {mounted && getTotal() > 0 && (
               <div className="text-sm font-semibold">
                 Total: ${getTotal().toFixed(2)}
               </div>
@@ -168,7 +171,7 @@ export default function Home() {
       </section>
 
       {/* Cart Preview */}
-      {items.length > 0 && (
+      {mounted && items.length > 0 && (
         <section className="container mx-auto px-4 pb-16">
           <Card className="max-w-2xl mx-auto bg-pink-50 border-pink-200">
             <CardHeader>
