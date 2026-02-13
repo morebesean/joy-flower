@@ -138,13 +138,15 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {products.map((product) => (
             <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="aspect-square bg-gradient-to-br from-pink-100 to-purple-100 rounded-lg mb-4 flex items-center justify-center">
-                  <span className="text-6xl">🌷</span>
-                </div>
-                <CardTitle>{product.name}</CardTitle>
-                <CardDescription>{product.description}</CardDescription>
-              </CardHeader>
+              <Link href={`/products/${product.id}`}>
+                <CardHeader className="cursor-pointer hover:bg-gray-50 transition-colors">
+                  <div className="aspect-square bg-gradient-to-br from-pink-100 to-purple-100 rounded-lg mb-4 flex items-center justify-center">
+                    <span className="text-6xl">🌷</span>
+                  </div>
+                  <CardTitle>{product.name}</CardTitle>
+                  <CardDescription>{product.description}</CardDescription>
+                </CardHeader>
+              </Link>
               <CardContent>
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-2xl font-bold text-pink-600">
@@ -156,9 +158,17 @@ export default function Home() {
                   {product.stock_quantity} in stock
                 </p>
               </CardContent>
-              <CardFooter>
+              <CardFooter className="flex gap-2">
+                <Link href={`/products/${product.id}`} className="flex-1">
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                  >
+                    View Details
+                  </Button>
+                </Link>
                 <Button
-                  className="w-full bg-pink-600 hover:bg-pink-700"
+                  className="flex-1 bg-pink-600 hover:bg-pink-700"
                   onClick={() => handleAddToCart(product)}
                 >
                   Add to Cart
