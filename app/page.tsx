@@ -5,42 +5,36 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge"
 import { useCart } from "@/lib/hooks/use-cart"
 import { ShoppingCart } from "lucide-react"
-
-// Test product data
-const testProducts = [
-  {
-    id: '1',
-    name: 'Red Rose Bouquet',
-    description: 'Beautiful dozen red roses',
-    price: 49.99,
-    category: 'Roses',
-    image_url: null,
-    stock_quantity: 20,
-  },
-  {
-    id: '2',
-    name: 'White Lily Arrangement',
-    description: 'Elegant white lilies in a vase',
-    price: 59.99,
-    category: 'Lilies',
-    image_url: null,
-    stock_quantity: 15,
-  },
-  {
-    id: '3',
-    name: 'Mixed Seasonal Flowers',
-    description: 'Colorful mix of seasonal blooms',
-    price: 39.99,
-    category: 'Mixed',
-    image_url: null,
-    stock_quantity: 25,
-  },
-]
+import { createClient } from "@/lib/supabase/client"
+import { useEffect, useState } from "react"
+import { Product } from "@/lib/types/database.types"
 
 export default function Home() {
   const { items, addItem, getItemCount, getTotal } = useCart()
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const handleAddToCart = (product: typeof testProducts[0]) => {
+  useEffect(() => {
+    async function fetchProducts() {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('상품 로딩 실패:', error)
+      } else {
+        setProducts(data || [])
+      }
+      setLoading(false)
+    }
+
+    fetchProducts()
+  }, [])
+
+  const handleAddToCart = (product: Product) => {
     addItem({
       productId: product.id,
       name: product.name,
@@ -113,18 +107,30 @@ export default function Home() {
           <Badge variant="secondary" className="text-sm px-4 py-2">
             ✅ Zustand Cart Working
           </Badge>
+          <Badge variant="secondary" className="text-sm px-4 py-2 bg-green-100 text-green-800">
+            ✅ Supabase Connected
+          </Badge>
+          <Badge variant="secondary" className="text-sm px-4 py-2 bg-purple-100 text-purple-800">
+            ✅ Stripe Ready
+          </Badge>
         </div>
       </section>
 
-      {/* Test Products */}
+      {/* Featured Products */}
       <section className="container mx-auto px-4 py-16">
         <h3 className="text-3xl font-bold text-center mb-2">Featured Flowers</h3>
         <p className="text-center text-gray-600 mb-8">
-          Test products to verify UI components and cart functionality
+          {loading ? 'Loading products from Supabase...' : `${products.length} products from Supabase database`}
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {testProducts.map((product) => (
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600"></div>
+            <p className="mt-4 text-gray-600">Loading products...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {products.map((product) => (
             <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="aspect-square bg-gradient-to-br from-pink-100 to-purple-100 rounded-lg mb-4 flex items-center justify-center">
@@ -153,8 +159,9 @@ export default function Home() {
                 </Button>
               </CardFooter>
             </Card>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Cart Preview */}
