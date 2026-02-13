@@ -8,6 +8,7 @@ import { ShoppingCart } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useEffect, useState } from "react"
 import { Product } from "@/lib/types/database.types"
+import Link from "next/link"
 
 export default function Home() {
   const { items, addItem, getItemCount, getTotal } = useCart()
@@ -54,13 +55,15 @@ export default function Home() {
             <p className="text-sm text-gray-600">Guam&apos;s Premier Flower Shop</p>
           </div>
           <div className="flex items-center gap-4">
-            <Button variant="outline" className="relative">
-              <ShoppingCart className="h-4 w-4 mr-2" />
-              Cart
-              {getItemCount() > 0 && (
-                <Badge className="ml-2 bg-pink-600">{getItemCount()}</Badge>
-              )}
-            </Button>
+            <Link href="/cart">
+              <Button variant="outline" className="relative">
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                Cart
+                {getItemCount() > 0 && (
+                  <Badge className="ml-2 bg-pink-600">{getItemCount()}</Badge>
+                )}
+              </Button>
+            </Link>
             {getTotal() > 0 && (
               <div className="text-sm font-semibold">
                 Total: ${getTotal().toFixed(2)}
