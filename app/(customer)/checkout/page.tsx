@@ -49,17 +49,33 @@ export default function CheckoutPage() {
     setSubmitting(true)
 
     try {
-      // TODO: Step 4에서 구현할 Stripe Checkout API 호출
-      console.log('Order data:', data)
-      console.log('Cart items:', items)
+      // Stripe Checkout API 호출
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderData: data,
+          items: items,
+        }),
+      })
 
-      // 임시: 2초 대기
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      const result = await response.json()
 
-      alert('주문 정보가 확인되었습니다!\n\nStep 4에서 실제 Stripe 결제를 연동하겠습니다.')
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to create checkout session')
+      }
+
+      // Stripe Checkout으로 리다이렉트
+      if (result.url) {
+        window.location.href = result.url
+      } else {
+        throw new Error('Checkout URL not found')
+      }
     } catch (error) {
       console.error('Checkout error:', error)
-      alert('오류가 발생했습니다. 다시 시도해주세요.')
+      alert(error instanceof Error ? error.message : '오류가 발생했습니다. 다시 시도해주세요.')
     } finally {
       setSubmitting(false)
     }
