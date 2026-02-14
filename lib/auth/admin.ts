@@ -51,7 +51,7 @@ export async function verifyAdminSession(
 ): Promise<AdminSession | null> {
   try {
     const verified = await jwtVerify(token, JWT_SECRET)
-    return verified.payload as AdminSession
+    return verified.payload as unknown as AdminSession
   } catch (error) {
     console.error('Token verification failed:', error)
     return null
