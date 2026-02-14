@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -34,7 +34,7 @@ interface PaginationInfo {
   totalPages: number
 }
 
-export default function OrdersPage() {
+function OrdersPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -309,5 +309,13 @@ export default function OrdersPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function OrdersPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center py-12"><div className="text-gray-500">Loading...</div></div>}>
+      <OrdersPageContent />
+    </Suspense>
   )
 }

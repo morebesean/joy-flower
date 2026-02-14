@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator"
 import { CheckCircle, Package, Truck, Calendar, MapPin } from "lucide-react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useCart } from "@/lib/hooks/use-cart"
 import Image from "next/image"
 
@@ -40,7 +40,7 @@ interface Order {
   created_at: string
 }
 
-export default function OrderSuccessPage() {
+function OrderSuccessPageContent() {
   const searchParams = useSearchParams()
   const sessionId = searchParams.get('session_id')
   const { clearCart } = useCart()
@@ -281,5 +281,13 @@ export default function OrderSuccessPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function OrderSuccessPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="text-gray-500">Loading order details...</div></div>}>
+      <OrderSuccessPageContent />
+    </Suspense>
   )
 }
